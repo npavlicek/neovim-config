@@ -18,15 +18,6 @@ return {
 		"folke/which-key.nvim",
 		opts = {},
 		event = "VeryLazy",
-		keys = {
-			{
-				"<leader>",
-				function()
-					require("which-key").show({ global = false })
-				end,
-				"Telescope keybinds",
-			},
-		},
 	},
 	{
 		"nvim-lualine/lualine.nvim",
@@ -88,7 +79,7 @@ return {
 		cmd = "ConformInfo",
 		keys = {
 			{
-				"<leader>",
+				"<leader>f",
 				function()
 					require("conform").format({ async = true, lsp_format = "fallback" })
 				end,
