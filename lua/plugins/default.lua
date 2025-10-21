@@ -2,6 +2,12 @@ return {
 	"NMAC427/guess-indent.nvim",
 	"lewis6991/gitsigns.nvim",
 	{
+		"morhetz/gruvbox",
+		config = function()
+			vim.cmd.colorscheme("gruvbox")
+		end,
+	},
+	{
 		"folke/todo-comments.nvim",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
