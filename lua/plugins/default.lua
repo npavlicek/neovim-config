@@ -26,6 +26,7 @@ return {
 			keys = {},
 		},
 		spec = {
+			-- FIXME: not sure why this doesn't work
 			{ "<leader>s", group = "[S]earch" },
 		},
 		event = "VeryLazy",
