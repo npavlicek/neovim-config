@@ -1,3 +1,8 @@
+-- TODO:
+-- kickstart random features
+--  * diagnostics
+-- Which-Key category names
+-- inlay hints
 return {
 	"NMAC427/guess-indent.nvim",
 	"lewis6991/gitsigns.nvim",
@@ -16,7 +21,13 @@ return {
 	},
 	{
 		"folke/which-key.nvim",
-		opts = {},
+		opts = {
+			mappings = true,
+			keys = {},
+		},
+		spec = {
+			{ "<leader>s", group = "[S]earch" },
+		},
 		event = "VeryLazy",
 	},
 	{
@@ -71,6 +82,36 @@ return {
 
 			require("telescope").load_extension("ui-select")
 			require("telescope").load_extension("fzf")
+
+			local builtin = require("telescope.builtin")
+			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
+			vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
+			vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+			vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
+			vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
+			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+			vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
+			vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
+			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "[S]earch Recent Files" })
+			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+
+			vim.keymap.set("n", "<leader>/", function()
+				builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+					winblend = 10,
+					previewer = false,
+				}))
+			end, { desc = "[/] Fuzzily search in current buffer" })
+
+			vim.keymap.set("n", "<leader>s/", function()
+				builtin.live_grep({
+					grep_open_files = true,
+					prompt_title = "Live Grep in Open Files",
+				})
+			end, { desc = "[S]search [/] in Open Files" })
+
+			vim.keymap.set("n", "<leader>sn", function()
+				builtin.find_files({ cwd = vim.fn.stdpath("config") })
+			end, { desc = "[S]earch [N]eovim files" })
 		end,
 	},
 	{
@@ -89,7 +130,7 @@ return {
 		},
 		opts = {
 			notify_on_error = false,
-			format_on_save = function(bufnr)
+			format_on_save = function()
 				return {
 					timeout_ns = 500,
 					lsp_format = "fallback",
@@ -147,6 +188,45 @@ return {
 					{ name = "cmdline" },
 				}),
 				matching = { disallow_symbol_nonprefix_matching = false },
+			})
+
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
+				callback = function(event)
+					local map = function(keys, func, desc, mode)
+						mode = mode or "n"
+						vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+					end
+
+					map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
+					map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
+					map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+					map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementations")
+					map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinitions")
+					map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+					map("g0", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
+					map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Worspace Symbols")
+					map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype definition")
+
+					local highlight_augroup = vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
+					vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+						buffer = event.buf,
+						group = highlight_augroup,
+						callback = vim.lsp.buf.document_highlight,
+					})
+					vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+						buffer = event.buf,
+						group = highlight_augroup,
+						callback = vim.lsp.buf.clear_references,
+					})
+					vim.api.nvim_create_autocmd("LspDetach", {
+						group = vim.api.nvim_create_augroup("lsp-detach", { clear = true }),
+						callback = function(event2)
+							vim.lsp.buf.clear_references()
+							vim.api.nvim_clear_autocmds({ group = "lsp-highlight", buffer = event2.buf })
+						end,
+					})
+				end,
 			})
 
 			local servers = {
