@@ -4,8 +4,8 @@
 -- Which-Key category names
 -- inlay hints
 return {
-	"NMAC427/guess-indent.nvim",
 	"lewis6991/gitsigns.nvim",
+	{ "NMAC427/guess-indent.nvim", opts = {} },
 	{
 		"morhetz/gruvbox",
 		config = function()
@@ -20,6 +20,10 @@ return {
 		opts = {},
 	},
 	{
+		"folke/trouble.nvim",
+		opts = {},
+	},
+	{
 		"folke/which-key.nvim",
 		opts = {
 			mappings = true,
@@ -30,6 +34,16 @@ return {
 			{ "<leader>s", group = "[S]earch" },
 		},
 		event = "VeryLazy",
+	},
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "InsertEnter",
+		opts = {
+			bind = true,
+			handler_opts = {
+				border = "rounded",
+			},
+		},
 	},
 	{
 		"nvim-lualine/lualine.nvim",
