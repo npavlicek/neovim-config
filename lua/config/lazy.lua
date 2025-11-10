@@ -32,7 +32,7 @@ vim.o.signcolumn = "yes"
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.list = true
-vim.opt.listchars = { tab = "  ", trail = " ", nbsp = " " }
+vim.opt.listchars = { tab = "»·", trail = "·", nbsp = "␣", eol = "↴", extends = "›", precedes = "‹" }
 vim.o.inccommand = "split"
 vim.o.cursorline = true
 vim.o.scrolloff = 10
@@ -61,7 +61,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_set_keymap("n", "<Esc>", "<cmd>noh<CR>", { noremap = true, silent = true })
 
 vim.diagnostic.config({
-	virtual_lines = true,
+	virtual_text = true,
 })
 
 require("lazy").setup({
