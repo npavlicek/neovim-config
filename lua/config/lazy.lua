@@ -38,7 +38,7 @@ vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.confirm = true
 
-vim.lsp.inlay_hint.enable(true)
+-- vim.lsp.inlay_hint.enable(true)
 
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
